@@ -1,0 +1,56 @@
+-- CASE 1 Identify the top 3 customers based on the total amount spent on orders
+
+select first_name, last_name, SUM(o.total_amount) total_order_amount
+from Customers c
+JOIN Orders o ON o.customers_id = c.customers_id
+GROUP BY c.customers_id
+ORDER BY total_order_amount DESC
+LIMIT 3;
+
+-- CASE 2 Find the average order value for each customer!
+
+select c.first_name,
+c.last_name,
+AVG(o.total_amount) average_orders
+from customers c
+JOIN Orders o ON o.customers_id = c.customers_id
+GROUP BY c.customers_id;
+
+-- CASE 3 List all employees who have resolved more than 4 support tickets!
+
+select
+	e.first_name,
+	e.last_name,
+	count(s.status) total_resolved
+from Employees e
+JOIN SupportTickets s ON s.employee_id = e.employee_id
+WHERE status = 'Resolved'
+GROUP BY e.employee_id
+Having total_resolved > 4;
+
+-- CASE 4 Find all products that have never been ordered
+
+select p.product_name, od.quantity
+from products p
+left join orderdetails od on od.product_id = p.product_id
+Where od.quantity IS NULL;
+
+-- CASE 5 Calculate the total revenue generated from product sales!
+
+select SUM(quantity * unit_price) as total_revenue_generated 
+from Orderdetails;
+
+-- CASE 6 Find the average price of products for each category and list categories with an average price higher than $500!
+
+with cte_avg_price as (
+select category, avg(price) as rerata from products
+GROUP BY category
+)
+select * from cte_avg_price where rerata > 500;
+
+-- CASE 7 find customers who have placed at least one order with a total amount greater than $1000
+
+select * from customers where customers_id in (
+select customers_id from orders
+where total_amount > 1000
+);
